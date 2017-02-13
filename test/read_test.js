@@ -1,8 +1,8 @@
 const assert = require('assert');
 const User = require('../src/user');
 
-describe('Read a record in database', () => {
-	var james, john, mary;
+describe('Read a record in the database', () => {
+	var james, david, mary, rita, lane;
 	
 	beforeEach((done) => {
 		james = new User({ 
@@ -11,20 +11,32 @@ describe('Read a record in database', () => {
 		});
 		james.save();
 
-		john = new User({ 
-			first_name: 'John', 
+		david = new User({ 
+			first_name: 'David', 
 			last_name: 'Smith' 
 		});
-		john.save();
+		david.save();
 		
 		mary = new User({ 
 			first_name: 'Mary', 
 			last_name: 'Joyce' 
 		});
-		mary.save()
+		mary.save();
+
+		rita = new User({
+			first_name: 'Rita',
+			last_name: 'Hayworth'
+		});
+		rita.save();
+
+		lane = new User({
+			first_name: 'Lane',
+			last_name: 'Mansfield'
+			});
+		lane.save()
 			.then(() => {
 				done();
-			});
+		});
 	});
 	
 	it('should find all users with the same name', (done) => {
@@ -41,5 +53,18 @@ describe('Read a record in database', () => {
 				assert(user.first_name === 'James');
 				done();
 			});			
+	});
+
+	it ('should skip and limit the results returned', (done) => {
+		User.find({})
+		.sort({ first_name: 1 })
+		.skip(1)
+		.limit(2)
+			.then((users) => {
+				assert(users.length === 2);
+				assert(users[0].first_name === 'James');
+				assert(users[1].first_name === 'Lane');
+				done();
+			});
 	});
 });
